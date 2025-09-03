@@ -18,31 +18,29 @@ function insertCursorAbove(textEditor: vscode.TextEditor, edit: vscode.TextEdito
 	insertCursor(textEditor, false);
 }
 
-function lastCursorLeft(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
-	const sels = [...textEditor.selections];
-	const lastSel = sels.pop();
-	if (!lastSel) return;
+function shiftLastSelection(editor: vscode.TextEditor, delta: number) {
+	const doc = editor.document;
+	const sels = [...editor.selections];
+	const i = sels.length - 1;
+	if (i < 0) return;
   
-	let lpos = Math.max(lastSel.start.character - 1, 0);
-	let rpos = Math.max(lastSel.end.character - 1, 0);
-	const line = lastSel.start.line;
+	const last = sels[i];
   
-	sels.push(new vscode.Selection(line, lpos, line, rpos));
-	textEditor.selections = sels;
+	// move both anchor and active by delta chars; clamp with validatePosition
+	const newAnchor = doc.validatePosition(last.anchor.translate(0, delta));
+	const newActive = doc.validatePosition(last.active.translate(0, delta));
+  
+	// preserve direction (Selection constructor handles anchor/active order)
+	sels[i] = new vscode.Selection(newAnchor, newActive);
+	editor.selections = sels;
   }
   
-  function lastCursorRight(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
-	const sels = [...textEditor.selections];
-	const lastSel = sels.pop();
-	if (!lastSel) return;
+  function lastCursorLeft(editor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
+	shiftLastSelection(editor, -1);
+  }
   
-	const mpos = textEditor.document.lineAt(lastSel.start.line).text.length;
-	let lpos = Math.min(lastSel.start.character + 1, mpos);
-	let rpos = Math.min(lastSel.end.character + 1, mpos);
-	const line = lastSel.start.line;
-  
-	sels.push(new vscode.Selection(line, lpos, line, rpos));
-	textEditor.selections = sels;
+  function lastCursorRight(editor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
+	shiftLastSelection(editor, +1);
   }
   
 
