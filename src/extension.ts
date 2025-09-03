@@ -19,35 +19,32 @@ function insertCursorAbove(textEditor: vscode.TextEditor, edit: vscode.TextEdito
 }
 
 function lastCursorLeft(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
-	let lastSel = textEditor.selections.pop();
-	if (! lastSel)
-		return;
-	let lpos = lastSel.start.character - 1;
-	let rpos = lastSel.end.character - 1;
-	if (lpos < 0)
-		lpos = 0;
-	if (rpos < 0)
-		rpos = 0;
-	let line = lastSel.start.line;
-	textEditor.selections.push(new vscode.Selection(line, lpos, line, rpos));
-	textEditor.selections = textEditor.selections; // Trigger update
-}
-
-function lastCursorRight(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
-	let lastSel = textEditor.selections.pop();
-	if (! lastSel)
-		return;
-	let lpos = lastSel.start.character + 1;
-	let rpos = lastSel.end.character + 1;
-	let mpos = textEditor.document.lineAt(lastSel.start.line).text.length;
-	if (lpos > mpos)
-		lpos = mpos;
-	if (rpos > mpos)
-		rpos = mpos;
-	let line = lastSel.start.line;
-	textEditor.selections.push(new vscode.Selection(line, lpos, line, rpos));
-	textEditor.selections = textEditor.selections; // Trigger update
-}
+	const sels = [...textEditor.selections];
+	const lastSel = sels.pop();
+	if (!lastSel) return;
+  
+	let lpos = Math.max(lastSel.start.character - 1, 0);
+	let rpos = Math.max(lastSel.end.character - 1, 0);
+	const line = lastSel.start.line;
+  
+	sels.push(new vscode.Selection(line, lpos, line, rpos));
+	textEditor.selections = sels;
+  }
+  
+  function lastCursorRight(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit) {
+	const sels = [...textEditor.selections];
+	const lastSel = sels.pop();
+	if (!lastSel) return;
+  
+	const mpos = textEditor.document.lineAt(lastSel.start.line).text.length;
+	let lpos = Math.min(lastSel.start.character + 1, mpos);
+	let rpos = Math.min(lastSel.end.character + 1, mpos);
+	const line = lastSel.start.line;
+  
+	sels.push(new vscode.Selection(line, lpos, line, rpos));
+	textEditor.selections = sels;
+  }
+  
 
 function insertCursor(textEditor: vscode.TextEditor, below: boolean) {
 	let sortedSelections = textEditor.selections.slice().sort((a, b) => (a.end.line - b.end.line));
