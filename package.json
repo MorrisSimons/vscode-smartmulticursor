@@ -2,15 +2,15 @@
 	"name": "smartmulticursor",
 	"displayName": "Smart Multi-cursor",
 	"description": "Context enhanced multi-cursor",
-	"version": "0.0.4",
-	"publisher": "idanp",
+	"version": "0.0.6",
+	"publisher": "MorrisSimons",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/idanpa/vscode-smartmulticursor"
+		"url": "https://github.com/MorrisSimons/vscode-smartmulticursor"
 	},
 	"bugs": {
-		"url": "https://github.com/idanpa/vscode-smartmulticursor/issues"
+		"url": "https://github.com/MorrisSimons/vscode-smartmulticursor/issues"
 	},
 	"icon": "icon.png",
 	"engines": {
